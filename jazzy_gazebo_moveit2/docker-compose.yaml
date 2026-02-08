@@ -1,0 +1,30 @@
+services:
+  ros2-jazzy-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - USER_UID=${UID:-1000}
+        - USER_GID=${GID:-1000}
+    image: ros2-jazzy-gazebo
+    container_name: ros2_dev
+    stdin_open: true
+    tty: true
+    network_mode: host
+    privileged: false
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${PWD}:/home/dockeruser/ws
+    
+    user: "${UID:-1000}:${GID:-1000}"
+    
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
